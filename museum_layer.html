@@ -1,0 +1,99 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS API for JavaScript Tutorials: Create a Starter App</title>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+    <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/dark/main.css">
+  <script src="https://js.arcgis.com/4.17/"></script>
+  
+  <script>  
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/Locate",
+      "esri/widgets/Track", 
+      "esri/Graphic",
+      "esri/widgets/BasemapToggle",
+      "esri/widgets/BasemapGallery",
+      "esri/layers/CSVLayer"
+    ], function(Map, MapView, Locate, Track, Graphic, BasemapToggle, BasemapGallery, CSVLayer) {
+
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [14.4378, 50.0755], // longitude, latitude
+      zoom: 12
+      });
+      
+
+var museumsRenderer = {
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://cdn.onlinewebfonts.com/svg/img_488119.png",
+          width: "18px",
+          height: "18px"
+        }
+      }
+var popupMuseum = {
+"title": "{name}",
+        "content": "<b>Opening hours:</b> {opening_hours}<br><b>Phone:</b> {phone}<br><b>Website:</b> {website}<br><b>Information:</b> {information}"
+      }
+      
+      var openstreetLayer = new CSVLayer({
+  url: "https://raw.githubusercontent.com/valdor14/isi/main/museums.csv",
+        title: "Museums",
+        renderer: museumsRenderer,
+        popupTemplate: popupMuseum
+});
+map.add(openstreetLayer,0);
+      
+      
+      var basemapGallery = new BasemapGallery({
+        view: view,
+        source: {
+          portal: {
+            url: "http://www.arcgis.com",
+            useVectorBasemaps: true, // Load vector tile basemap group
+          },
+        } 
+      });
+
+      view.ui.add(basemapGallery, "top-right"); // Add to the view
+      var track = new Track({
+          view: view,
+          graphic: new Graphic({
+            symbol: {
+              type: "simple-marker",
+              size: "12px",
+              color: "green",
+              outline: {
+                color: "#efefef",
+                width: "1.5px"
+              }
+            }
+          }),
+          useHeadingEnabled: false
+        });
+        view.ui.add(track, "top-left");
+     
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
